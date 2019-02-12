@@ -50,6 +50,16 @@ type SendMessage
 sendMessage :: SendMessageRequest -> ClientM (Response Message)
 sendMessage = client (Proxy @SendMessage)
 
+-- ** 'sendDocument'
+
+type SendDocument
+  = "sendDocument" :> ReqBody '[JSON] SendDocumentRequest :> Post '[JSON] (Response Message)
+
+-- | Use this method to send documents.
+-- On success, the sent 'Message' is returned.
+sendDocument :: SendDocumentRequest -> ClientM (Response Message)
+sendDocument = client (Proxy @SendDocument)
+
 -- | Unique identifier for the target chat
 -- or username of the target channel (in the format @\@channelusername@).
 data SomeChatId
@@ -94,3 +104,17 @@ data SendMessageRequest = SendMessageRequest
 
 instance ToJSON   SendMessageRequest where toJSON = gtoJSON
 instance FromJSON SendMessageRequest where parseJSON = gparseJSON
+
+-- | Request parameters for 'sendDocument'.
+data SendDocumentRequest = SendDocumentRequest
+  { sendDocumentChatId               :: SomeChatId -- ^ Unique identifier for the target chat or username of the target channel (int the format @\@channelusername@).
+  , sendDocumentDocument             :: String -- ^ File to send. Pass an HTTP URL as a String for Telegram to get a file from Internet.
+  , sendDocumentCaption              :: Maybe String -- ^ Document caption (may also be used when resending documents by *file_id*), 0-1024 characters.
+  , sendDocumentParseMode            :: Maybe ParseMode -- ^ Send 'Markdown' or 'HTML', if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in the media caption.
+  , sendDocumentDisableNotification  :: Maybe Bool -- ^ Sends the message silently. Users will receive a notification with no sound.
+  , sendDocumentReplyToMessageId     :: Maybe MessageId -- ^ If the message is a reply, ID of the original message.
+  , sendDocumentReplyMarkup          :: Maybe SomeReplyMarkup -- ^ Additional interface options. A JSON-serialized object for an inline keyboard, custom reply keyboard, instructions to remove reply keyboard or to force a reply from the user.
+  } deriving (Generic)
+
+instance ToJSON   SendDocumentRequest where toJSON = gtoJSON
+instance FromJSON SendDocumentRequest where parseJSON = gparseJSON
